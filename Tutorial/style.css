@@ -1,8 +1,10 @@
 body{
     font-family: 'Roboto', sans-serif;
-}
-
-body{
     background-color:#282B28;
     color:#FAEBD7
+}
+h1{
+    padding-top: 10px;
+    font-size: 3rem;
+    text-align: center;
 }
