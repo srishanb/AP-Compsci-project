@@ -1,0 +1,22 @@
+body{
+    font-family: 'Roboto', sans-serif;
+    background-color:#282B28;
+    color:#FAEBD7
+}
+h1{
+    padding-top: 10px;
+    font-size: 3rem;
+    text-align: center;
+}
+#flipDotContainer{
+    margin-left: 50px;
+    margin-right: auto;
+    width: 75%;
+    aspect-ratio: 16 / 9;
+    padding: 20px;
+    background-color: aqua;
+    border: 8px solid #ccc;
+    box-sizing: border-box;
+    overflow: auto;
+
+}
