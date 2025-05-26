@@ -9,22 +9,25 @@
         <link rel="stylesheet" href="style.css">
 
         <meta charset="utf-8">
-        <meta name="viewport" content="with=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>FLIPPYDOTS</title>
     </head>
     <body>
         <h1>FLIPPYDOTS</h1>
-        <div id="flipDotContainer">
 
-            <canvas id="flipDotCanvas"></canvas>
-            <input type="range" id=" dotSizeSlider" min="5" max="50" value="20" />
+ <div style="display: flex; justify-content: center; align-items: start; gap: 20px;">
 
-        </div>
-        <h2>An HTML Playground</h2>
-
-        This is my very first website and I'm <b>extremely excited!!!!</b>
+    <div id="flipDotContainer">
+      <canvas id="flipDotCanvas"></canvas>
+    </div>
 
 
+    <div id="sliderBox">
+      <label for="dotSizeSlider">Dot Size</label><br />
+      <input type="range" id="dotSizeSlider" min="5" max="50" value="20" />
+    </div>
+  </div>
+<script src="flipCanvas.js"></script>
     </body>
 </html>
 

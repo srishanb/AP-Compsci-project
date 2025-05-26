@@ -1,7 +1,7 @@
 body{
     font-family: 'Roboto', sans-serif;
     background-color:#282B28;
-    color:#FAEBD7
+    color:#FAEBD7;
 }
 h1{
     padding-top: 10px;
@@ -9,26 +9,36 @@ h1{
     text-align: center;
 }
 #flipDotContainer{
-    margin-left: calc(auto-50);
-    margin-right: auto;
-    width: 75%;
+    width: 75vw;
+
     aspect-ratio: 16 / 9;
-    padding: 20px;
+    padding: 0;
     background-color: aqua;
     border: 8px solid #ccc;
     box-sizing: border-box;
     overflow: auto;
+    position: relative;
 
 }
 #flipDotCanvas{
+    display: block;
     width: 100%;
     height: 100%;
-    display: block;
+
+}
+#sliderBox{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    color: #FAEBD7;
+    padding-top: 20px;
 }
 #dotSizeSlider{
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    writing-mode: bt-lr; /* vertical slider, not sure if working right*/
     transform: rotate(270deg);
+    margin-top: 20px;
+}
+#sliderBox label{
+    padding-bottom: 40px;
+    display: inline-block;
 }
