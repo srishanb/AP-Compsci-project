@@ -17,24 +17,22 @@ function resizeCanvas() {
 }
 
 function drawDots() {
-  const cols = Math.floor(canvas.width / (dotSize + spacing));
-  const rows = Math.floor(canvas.height / (dotSize + spacing));
+    const cellSize = dotSize + spacing;
+  const cols = Math.floor(canvas.width / cellSize);
+  const rows = Math.floor(canvas.height / cellSize);
 
-  const totalWidth = cols * (dotSize + spacing);
-  const totalHeight = rows * (dotSize + spacing);
-  const offsetX = (canvas.width - totalWidth) / 2;
-  const offsetY = (canvas.height - totalHeight) / 2;
-
-  dotGrid = Array.from({ length: rows }, () =>
-    Array.from({ length: cols }, () => false)
-  );
+  const totalWidth = cols * cellSize - spacing;
+  const totalHeight = rows * cellSize - spacing;
+  const offsetX = (canvas.width - totalWidth) / 2 + dotSize / 2;
+  const offsetY = (canvas.height - totalHeight) / 2 + dotSize / 2;
+  dotGrid = Array.from({ length: rows }, () => Array(cols).fill(false));
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
-      const pixx = offsetX + x * (dotSize + spacing);
-      const pixy = offsetY + y * (dotSize + spacing);
+      const pixx = offsetX + x * cellSize;
+      const pixy = offsetY + y * cellSize;
       ctx.beginPath();
       ctx.arc(pixx, pixy, dotSize / 2, 0, Math.PI * 2);
       ctx.fillStyle = dotGrid[y][x] ? '#FFD700' : '#000';
