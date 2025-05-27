@@ -1,7 +1,7 @@
 body{
     font-family: 'Roboto', sans-serif;
-    background-color:#282B28;
-    color:#FAEBD7;
+    background-color:#3C3C3C;
+    color:#F5F5F5;
 }
 h1{
     padding-top: 10px;
@@ -13,8 +13,8 @@ h1{
 
     aspect-ratio: 16 / 9;
     padding: 0;
-    background-color: aqua;
-    border: 8px solid #ccc;
+    background-color: #3C3C3C;
+    border: 8px solid #F5F5F5;
     box-sizing: border-box;
     overflow: auto;
     position: relative;
