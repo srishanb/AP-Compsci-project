@@ -2,17 +2,17 @@ import './style.css'
 import * as THREE from 'three'
 
 const container = document.getElementById('flipGridContainer');
-
-//Options
-const width = container.clientWidth;
-const height = container.clientHeight;
+// Update the container border style to be thicker and white
+if (container) {
+  container.style.border = "4px solid white";
+}
 
 // Scene
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("#3C3C3C")
 
 // Camera
-const camera = new THREE.PerspectiveCamera(80, width / height, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(80, container.clientWidth / container.clientHeight, 0.1, 1000);
 camera.position.z = 110;
 camera.position.y = 0;
 camera.position.x = 0;
@@ -43,8 +43,8 @@ scene.add(directionalLight);
 
 // Renderer
 const Renderer = new THREE.WebGLRenderer();
-Renderer.setSize(width, height);
-camera.aspect = width / height;
+Renderer.setSize(container.clientWidth, container.clientHeight);
+camera.aspect = container.clientWidth / container.clientHeight;
 camera.updateProjectionMatrix();
 Renderer.setPixelRatio(2);
 container.appendChild(Renderer.domElement);
@@ -59,8 +59,9 @@ let needsRender = true; // Flag to control rendering
 // Slider
 const slider = document.createElement('input');
 slider.type = 'range';
-slider.min = '1';
-slider.max = '10';
+slider.min = '6';
+slider.max = '15';
+slider.step = '0.1';
 slider.value = '5';
 slider.style.position = 'absolute';
 slider.style.right = '40px';
@@ -80,7 +81,13 @@ button.style.fontSize = '16px';
 document.body.appendChild(button);
 
 function createGrid() {
+  const width = container.clientWidth;
+  const height = container.clientHeight;
+
   const scale = parseFloat(slider.value) / 5;
+
+  const pixelRatio = scale < 0.5 ? 1 : scale < 0.8 ? 1.5 : 2;
+  Renderer.setPixelRatio(pixelRatio);
 
   const scaledSpacing = dotSpacing * scale;
   const gridCols = Math.floor(width / scaledSpacing);
@@ -103,8 +110,8 @@ function createGrid() {
       group.add(front);
       group.add(back);
 
-      group.position.x = (j - gridCols / 2 + 0.5) * scaledSpacing;
-      group.position.y = (i - gridRows / 2 + 0.5) * scaledSpacing;
+      group.position.x = (j - (gridCols - 1) / 2) * scaledSpacing;
+      group.position.y = (i - (gridRows - 1) / 2) * scaledSpacing;
       scene.add(group);
 
       flipDots.push({ group, currentRotation: 0, isFlipping: false });
@@ -115,12 +122,8 @@ function createGrid() {
 }
 createGrid();
 
-let debounceTimeout;
 slider.addEventListener('input', () => {
-  clearTimeout(debounceTimeout);
-  debounceTimeout = setTimeout(() => {
-    createGrid();
-  }, 100);
+  createGrid();
 });
 
 function animate() {
@@ -170,5 +173,6 @@ window.addEventListener('resize', () => {
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
 
+  createGrid();
   needsRender = true;
 });
