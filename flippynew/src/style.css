@@ -1,8 +1,10 @@
 * {
 
   margin: 0;
-  padding: 0;
+  padding: 10px;
   box-sizing: border-box;
+  background-color: #3C3C3C;
+  color: #F5F5F5;
 }
 
 html, body{
