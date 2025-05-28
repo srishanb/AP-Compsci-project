@@ -60,10 +60,12 @@ function animate() {
   requestAnimationFrame(animate);
 
   if (isFlipping && currentRotation < targetRotation) {
-    const step = 0.05;
-    frontCircle.rotateOnAxis(axis, step);
-    backCircle.rotateOnAxis(axis, step);
-    currentRotation += step;
+    const step = 0.5;
+    const remaining = targetRotation - currentRotation;
+    const actualStep = Math.min(step, remaining);
+    frontCircle.rotateOnAxis(axis, actualStep);
+    backCircle.rotateOnAxis(axis, actualStep);
+    currentRotation += actualStep;
 
     if (currentRotation >= targetRotation) {
       isFlipping = false;
