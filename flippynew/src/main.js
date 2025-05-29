@@ -2,9 +2,9 @@ import './style.css'
 import * as THREE from 'three'
 
 const container = document.getElementById('flipGridContainer');
-// Update the container border style to be thicker and white
+
 if (container) {
-  container.style.border = "4px solid white";
+  container.style.border = "5px solid white";
 }
 
 // Scene
@@ -36,6 +36,16 @@ const backCircle = new THREE.Mesh(new THREE.CircleGeometry(2), backMaterial);
 const dotSpacing = 5;
 const flipDots = [];
 
+
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+let hoveredDot = null;
+let hoverTimer = null;
+const HOVER_DELAY = 10; 
+let hoverFlipEnabled = true;
+const flippedDots = new Set();
+const FLIP_COOLDOWN = 500;
+
 // Lights
 const directionalLight = new THREE.DirectionalLight(0xffffff, 10);
 directionalLight.position.set(0, 0, 10);
@@ -54,20 +64,122 @@ Renderer.render(scene, camera);
 const targetRotation = Math.PI;
 const axis = new THREE.Vector3(1, 1, 0).normalize();
 
-let needsRender = true; // Flag to control rendering
+let needsRender = true;
 
-
-// Select slider from the existing HTML
 const slider = document.getElementById('dot-size-slider');
 
-const button = document.createElement('button');
-button.textContent = 'Flip Circle';
-button.style.position = 'absolute';
-button.style.top = '20px';
-button.style.left = '20px';
-button.style.padding = '10px 20px';
-button.style.fontSize = '16px';
-document.body.appendChild(button);
+
+
+const button = document.getElementById('flip-button');
+const resetButton = document.getElementById('reset-button');
+const hoverToggleButton = document.getElementById('hover-toggle-button');
+
+
+function resetGrid() {
+ 
+  if (hoverTimer) {
+    clearTimeout(hoverTimer);
+    hoverTimer = null;
+  }
+  hoveredDot = null;
+  
+
+  flippedDots.clear();
+
+  for (const dot of flipDots) {
+
+    dot.group.rotation.set(0, 0, 0);
+    dot.currentRotation = 0;
+    dot.isFlipping = false;
+  }
+  
+  needsRender = true;
+}
+
+function toggleHoverFlip() {
+  hoverFlipEnabled = !hoverFlipEnabled;
+  
+
+  if (!hoverFlipEnabled) {
+    if (hoverTimer) {
+      clearTimeout(hoverTimer);
+      hoverTimer = null;
+    }
+    hoveredDot = null;
+    flippedDots.clear();
+  }
+  
+
+  if (hoverFlipEnabled) {
+    hoverToggleButton.textContent = 'Hover Flip: ON (Press H)';
+    hoverToggleButton.className = 'control-button hover-toggle-button hover-toggle-on';
+  } else {
+    hoverToggleButton.textContent = 'Hover Flip: OFF (Press H)';
+    hoverToggleButton.className = 'control-button hover-toggle-button hover-toggle-off';
+  }
+}
+
+function onMouseMove(event) {
+  if (!hoverFlipEnabled) return;
+
+  const rect = container.getBoundingClientRect();
+  mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  
+  const dotGroups = flipDots.map(dot => dot.group);
+  const intersects = raycaster.intersectObjects(dotGroups, true);
+
+  if (intersects.length > 0) {
+    const intersectedGroup = intersects[0].object.parent;
+    const dotIndex = flipDots.findIndex(dot => dot.group === intersectedGroup);
+    
+    if (dotIndex !== -1 && hoveredDot !== dotIndex) {
+      if (hoverTimer) {
+        clearTimeout(hoverTimer);
+        hoverTimer = null;
+      }
+      
+      if (!flippedDots.has(dotIndex) && !flipDots[dotIndex].isFlipping) {
+        hoveredDot = dotIndex;
+        
+        hoverTimer = setTimeout(() => {
+          if (hoveredDot === dotIndex && !flipDots[dotIndex].isFlipping && 
+              hoverFlipEnabled && !flippedDots.has(dotIndex)) {
+            
+            flipDots[dotIndex].isFlipping = true;
+            flipDots[dotIndex].currentRotation = 0;
+            needsRender = true;
+            
+            flippedDots.add(dotIndex);
+            
+            setTimeout(() => {
+              flippedDots.delete(dotIndex);
+            }, FLIP_COOLDOWN);
+            
+            hoveredDot = null;
+            hoverTimer = null;
+          }
+        }, HOVER_DELAY);
+      }
+    }
+  } else {
+    if (hoverTimer) {
+      clearTimeout(hoverTimer);
+      hoverTimer = null;
+    }
+    hoveredDot = null;
+  }
+}
+
+function onMouseLeave() {
+  if (hoverTimer) {
+    clearTimeout(hoverTimer);
+    hoverTimer = null;
+  }
+  hoveredDot = null;
+}
 
 function createGrid() {
   const width = container.clientWidth;
@@ -82,10 +194,16 @@ function createGrid() {
   const gridCols = Math.floor(width / scaledSpacing);
   const gridRows = Math.floor(height / scaledSpacing);
 
+
   for (const dot of flipDots) {
     scene.remove(dot.group);
   }
   flipDots.length = 0;
+  flippedDots.clear();
+
+ 
+  const gridWidth = (gridCols - 1) * scaledSpacing;
+  const gridHeight = (gridRows - 1) * scaledSpacing;
 
   for (let i = 0; i < gridRows; i++) {
     for (let j = 0; j < gridCols; j++) {
@@ -99,21 +217,19 @@ function createGrid() {
       group.add(front);
       group.add(back);
 
-      group.position.x = (j - (gridCols - 1) / 2) * scaledSpacing;
-      group.position.y = (i - (gridRows - 1) / 2) * scaledSpacing;
+
+      group.position.x = j * scaledSpacing - gridWidth / 2;
+      group.position.y = i * scaledSpacing - gridHeight / 2;
+      group.position.z = 0;
+      
       scene.add(group);
 
       flipDots.push({ group, currentRotation: 0, isFlipping: false });
     }
   }
 
-  needsRender = true; // Trigger render after grid update
+  needsRender = true; 
 }
-createGrid();
-
-slider.addEventListener('input', () => {
-  createGrid();
-});
 
 function animate() {
   requestAnimationFrame(animate);
@@ -142,7 +258,23 @@ function animate() {
     needsRender = false;
   }
 }
-animate();
+
+
+createGrid();
+
+
+slider.addEventListener('input', () => {
+  createGrid();
+});
+
+container.addEventListener('mousemove', onMouseMove);
+container.addEventListener('mouseleave', onMouseLeave);
+
+document.addEventListener('keydown', (event) => {
+  if (event.key.toLowerCase() === 'h') {
+    toggleHoverFlip();
+  }
+});
 
 button.addEventListener('click', () => {
   for (const dot of flipDots) {
@@ -151,8 +283,11 @@ button.addEventListener('click', () => {
       dot.currentRotation = 0;
     }
   }
-  needsRender = true; // Render while flipping
+  needsRender = true;
 });
+
+resetButton.addEventListener('click', resetGrid);
+hoverToggleButton.addEventListener('click', toggleHoverFlip);
 
 window.addEventListener('resize', () => {
   const width = container.clientWidth;
@@ -165,3 +300,6 @@ window.addEventListener('resize', () => {
   createGrid();
   needsRender = true;
 });
+
+
+animate();
