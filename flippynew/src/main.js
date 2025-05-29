@@ -56,20 +56,9 @@ const axis = new THREE.Vector3(1, 1, 0).normalize();
 
 let needsRender = true; // Flag to control rendering
 
-// Slider
-const slider = document.createElement('input');
-slider.type = 'range';
-slider.min = '6';
-slider.max = '15';
-slider.step = '0.1';
-slider.value = '5';
-slider.style.position = 'absolute';
-slider.style.right = '40px';
-slider.style.top = '50%';
-slider.style.transform = 'translateY(-50%) rotate(270deg)';
-slider.style.transformOrigin = 'center';
-slider.style.width = '150px';
-document.body.appendChild(slider);
+
+// Select slider from the existing HTML
+const slider = document.getElementById('dot-size-slider');
 
 const button = document.createElement('button');
 button.textContent = 'Flip Circle';
