@@ -1,6 +1,18 @@
 import './style.css'
 import * as THREE from 'three'
 
+const flipChorusSounds = Array.from({ length: 10 }, (_, i) => {
+  const sound = new Audio('SingleFlipNoise.wav');
+  sound.playbackRate = 0.8 + i * 0.05; // Range: 0.8 to 1.25 (harmonious intervals)
+  return sound;
+});
+
+function playFlipSound() {
+  const sound = new Audio('SingleFlipNoise.wav');
+  sound.playbackRate = 0.95 + Math.random() * 0.1; // Range: 0.95 to 1.05
+  sound.play();
+}
+
 const container = document.getElementById('flipGridContainer');
 
 if (container) {
@@ -15,7 +27,6 @@ scene.background = new THREE.Color("#3C3C3C")
 const aspect = container.clientWidth / container.clientHeight;
 const camera = new THREE.OrthographicCamera(-aspect * 50, aspect * 50, 50, -50, 0.1, 1000);
 camera.position.z = 210;
-camera.position.z = 110;
 camera.position.y = 0;
 camera.position.x = 0;
 camera.lookAt(0, 0, 0);
@@ -226,7 +237,7 @@ function createGrid() {
       
       scene.add(group);
 
-      flipDots.push({ group, currentRotation: 0, isFlipping: false });
+      flipDots.push({ group, currentRotation: 0, isFlipping: false, triggeredByButton: false });
     }
   }
 
@@ -250,6 +261,10 @@ function animate() {
       if (dot.currentRotation >= targetRotation) {
         dot.isFlipping = false;
         dot.currentRotation = 0;
+        if (!dot.triggeredByButton) {
+          playFlipSound();
+        }
+        dot.triggeredByButton = false;
       }
       flipping = true;
     }
@@ -279,10 +294,17 @@ document.addEventListener('keydown', (event) => {
 });
 
 button.addEventListener('click', () => {
+  flipChorusSounds.forEach((sound, i) => {
+    setTimeout(() => {
+      const clone = sound.cloneNode();
+      clone.play();
+    }, i * 30);
+  });
   for (const dot of flipDots) {
     if (!dot.isFlipping) {
       dot.isFlipping = true;
       dot.currentRotation = 0;
+      dot.triggeredByButton = true;
     }
   }
   needsRender = true;
