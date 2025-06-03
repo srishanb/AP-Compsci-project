@@ -291,6 +291,25 @@ document.addEventListener('keydown', (event) => {
   if (event.key.toLowerCase() === 'h') {
     toggleHoverFlip();
   }
+  if (event.key.toLowerCase() === 'r') {
+    resetGrid();
+  }
+  if (event.key.toLowerCase() === 'f') {
+    flipChorusSounds.forEach((sound, i) => {
+      setTimeout(() => {
+        const clone = sound.cloneNode();
+        clone.play();
+      }, i * 30);
+    });
+    for (const dot of flipDots) {
+      if (!dot.isFlipping) {
+        dot.isFlipping = true;
+        dot.currentRotation = 0;
+        dot.triggeredByButton = true;
+      }
+    }
+    needsRender = true;
+  }
 });
 
 button.addEventListener('click', () => {
