@@ -3,13 +3,15 @@ import * as THREE from 'three'
 
 const flipChorusSounds = Array.from({ length: 10 }, (_, i) => {
   const sound = new Audio('SingleFlipNoise.wav');
-  sound.playbackRate = 0.8 + i * 0.05; // Range: 0.8 to 1.25 (harmonious intervals)
+  sound.playbackRate = 0.8 + i * 0.05;
+  sound.volume = 0.3;
   return sound;
 });
 
 function playFlipSound() {
   const sound = new Audio('SingleFlipNoise.wav');
-  sound.playbackRate = 0.95 + Math.random() * 0.1; // Range: 0.95 to 1.05
+  sound.playbackRate = 0.95 + Math.random() * 0.1;
+  sound.volume = 0.3;
   sound.play();
 }
 
@@ -50,7 +52,7 @@ const dotSpacing = 5;
 const flipDots = [];
 
 
-const raycaster = new THREE.Raycaster();
+const raycaster = new THREE.Raycaster(); //For deteching mouse hover over 3D
 const mouse = new THREE.Vector2();
 let hoveredDot = null;
 let hoverTimer = null;
